@@ -1,4 +1,4 @@
-import { MessageCircle, X } from 'lucide-react'
+import { BarChart3, X } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import type { Message } from '../types/chat'
 import { sendMessage } from '../services/ai'
@@ -10,7 +10,7 @@ const WELCOME_MESSAGE: Message = {
   id: 'welcome',
   role: 'assistant',
   content:
-    "Hi! I'm your Product Management assistant. Ask me anything about product strategy, roadmaps, prioritization, user research, agile methodologies, and more. How can I help you today?",
+    "Hi! I'm 10x Analyst — your AI data analysis assistant. Upload a file or ask a question to get started.",
   timestamp: new Date(),
 }
 
@@ -56,7 +56,7 @@ export default function ChatWidget({ className = '' }: ChatWidgetProps) {
           id: generateId(),
           role: 'assistant',
           content:
-            'Sorry, I encountered an error while processing your request. Please try again.',
+            'Sorry, I encountered an error. Please try again.',
           timestamp: new Date(),
         }
         setMessages((prev) => [...prev, errorMessage])
@@ -68,13 +68,14 @@ export default function ChatWidget({ className = '' }: ChatWidgetProps) {
   )
 
   return (
-    <div className={className}>
+    <div className={className} style={{ pointerEvents: 'auto' }}>
       {/* Chat popup */}
       {isOpen && (
         <div
-          className="fixed bottom-24 right-6 w-[380px] h-[520px] max-sm:inset-0 max-sm:w-full max-sm:h-full max-sm:bottom-0 max-sm:right-0 rounded-xl max-sm:rounded-none shadow-xl border border-border bg-background flex flex-col overflow-hidden animate-scale-in z-50"
+          className="fixed bottom-24 right-6 w-[400px] h-[560px] max-sm:inset-0 max-sm:w-full max-sm:h-full max-sm:bottom-0 max-sm:right-0 max-sm:rounded-none bg-background flex flex-col animate-scale-in z-[99998]"
           role="dialog"
-          aria-label="PM Assistant chat"
+          aria-label="10x Analyst chat"
+          style={{ borderRadius: '16px', overflow: 'hidden', boxShadow: '0 25px 60px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)' }}
         >
           <ChatHeader onClose={() => setIsOpen(false)} />
           <ChatWindow messages={messages} isLoading={isLoading} />
@@ -83,26 +84,18 @@ export default function ChatWidget({ className = '' }: ChatWidgetProps) {
       )}
 
       {/* Floating action button */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-elegant flex items-center justify-center transition-all duration-200 hover:scale-105 hover:shadow-glow active:scale-95 focus-ring z-50 animate-scale-in"
-          aria-label="Open PM Assistant chat"
-        >
-          <MessageCircle className="h-6 w-6" />
-        </button>
-      )}
-
-      {/* Close overlay button (visible only when open, on mobile the X in header handles it) */}
-      {isOpen && (
-        <button
-          onClick={() => setIsOpen(false)}
-          className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-muted text-muted-foreground shadow-md flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 focus-ring z-50 max-sm:hidden"
-          aria-label="Close PM Assistant chat"
-        >
-          <X className="h-6 w-6" />
-        </button>
-      )}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-elegant flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 focus-ring z-[99999] ${
+          isOpen
+            ? 'bg-muted text-muted-foreground hover:bg-accent'
+            : 'bg-primary text-primary-foreground hover:shadow-glow'
+        }`}
+        aria-label={isOpen ? 'Close chat' : 'Open 10x Analyst chat'}
+        style={{ pointerEvents: 'auto' }}
+      >
+        {isOpen ? <X className="h-5 w-5" /> : <BarChart3 className="h-6 w-6" />}
+      </button>
     </div>
   )
 }

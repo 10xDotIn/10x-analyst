@@ -14,13 +14,9 @@ function mountWidget() {
     container.style.zIndex = '99999'
     container.style.bottom = '0'
     container.style.right = '0'
-    container.style.pointerEvents = 'none'
+    container.style.pointerEvents = 'auto'
     document.body.appendChild(container)
   }
-
-  // Allow pointer events on children
-  container.style.width = '0'
-  container.style.height = '0'
 
   createRoot(container).render(
     <StrictMode>

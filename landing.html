@@ -7,52 +7,88 @@
   <meta name="description" content="Upload CSV, PDF, Excel files and ask questions. AI analyzes your data and provides insights in real-time." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg: #0a0a0a;
-      --fg: #e8e8e8;
-      --dim: #666;
-      --border: #222;
-      --accent: #fff;
-      --surface: #111;
-      --hover: #1a1a1a;
+      --bg: #050505;
+      --fg: #f0f0f0;
+      --dim: #888;
+      --muted: #555;
+      --border: #1a1a1a;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --accent-glow: rgba(99, 102, 241, 0.15);
+      --surface: #0c0c0c;
+      --surface-hover: #141414;
+      --gradient-1: #6366f1;
+      --gradient-2: #a855f7;
+      --gradient-3: #ec4899;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', monospace;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--fg);
-      font-size: 14px;
-      line-height: 1.7;
+      font-size: 15px;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
     }
 
-    ::selection {
-      background: var(--accent);
-      color: var(--bg);
+    ::selection { background: var(--accent); color: white; }
+
+    /* --- Animations --- */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    a {
-      color: var(--fg);
-      text-decoration: none;
-      border-bottom: 1px solid var(--border);
-      transition: border-color 0.2s, color 0.2s;
+    .animate-in {
+      animation: fadeInUp 0.8s ease-out both;
     }
-    a:hover {
-      color: var(--accent);
-      border-color: var(--accent);
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+
+    /* --- Noise texture overlay --- */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
     }
 
     /* --- Nav --- */
@@ -65,50 +101,69 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 32px;
-      background: rgba(10, 10, 10, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+      background: rgba(5, 5, 5, 0.7);
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      animation: fadeIn 0.6s ease-out;
     }
 
     .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       font-weight: 700;
-      font-size: 15px;
-      letter-spacing: -0.02em;
-      color: var(--accent);
+      font-size: 16px;
+      color: var(--fg);
+      text-decoration: none;
       border: none;
+    }
+    .nav-logo:hover { color: var(--fg); }
+
+    .nav-logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: white;
     }
 
     .nav-links {
       display: flex;
-      gap: 28px;
+      gap: 32px;
       list-style: none;
     }
 
     .nav-links a {
-      font-size: 13px;
-      color: var(--dim);
+      font-size: 14px;
+      color: var(--muted);
+      text-decoration: none;
       border: none;
       transition: color 0.2s;
+      font-weight: 400;
     }
-    .nav-links a:hover {
-      color: var(--accent);
-    }
+    .nav-links a:hover { color: var(--fg); }
 
     .nav-cta {
       font-size: 13px;
+      font-weight: 500;
       padding: 8px 20px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
       color: var(--fg) !important;
+      text-decoration: none;
       transition: all 0.2s;
-      cursor: pointer;
     }
     .nav-cta:hover {
-      background: var(--accent);
-      color: var(--bg) !important;
-      border-color: var(--accent);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
     }
 
     /* --- Hero --- */
@@ -118,20 +173,47 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 120px 32px 80px;
+      padding: 140px 32px 100px;
       text-align: center;
       position: relative;
+      overflow: hidden;
     }
 
+    /* Hero background glow orbs */
     .hero::before {
       content: '';
       position: absolute;
-      top: 50%;
+      top: -200px;
       left: 50%;
-      transform: translate(-50%, -50%);
-      width: 600px;
+      transform: translateX(-50%);
+      width: 800px;
       height: 600px;
-      background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 70%);
+      background: radial-gradient(ellipse, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.06) 40%, transparent 70%);
+      pointer-events: none;
+      animation: glow-pulse 6s ease-in-out infinite;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.3;
+    }
+
+    /* Floating grid pattern */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent);
+      -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent);
       pointer-events: none;
     }
 
@@ -139,45 +221,53 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 16px;
-      border: 1px solid var(--border);
+      padding: 6px 18px;
       border-radius: 100px;
-      font-size: 12px;
-      color: var(--dim);
-      margin-bottom: 40px;
-      letter-spacing: 0.05em;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent-light);
+      background: var(--accent-glow);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      margin-bottom: 32px;
+      animation: fadeInUp 0.6s ease-out both;
     }
 
-    .hero-badge .dot {
+    .hero-badge .pulse-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      background: var(--accent-light);
+      animation: glow-pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 8px var(--accent);
     }
 
     .hero h1 {
-      font-size: clamp(32px, 6vw, 64px);
-      font-weight: 700;
+      font-size: clamp(40px, 7vw, 80px);
+      font-weight: 800;
       letter-spacing: -0.04em;
-      line-height: 1.1;
-      color: var(--accent);
+      line-height: 1.05;
       margin-bottom: 24px;
-      max-width: 700px;
+      max-width: 800px;
+      animation: fadeInUp 0.6s ease-out 0.15s both;
     }
 
-    .hero p {
-      font-size: clamp(14px, 1.5vw, 16px);
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2), var(--gradient-3));
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-shift 4s ease infinite;
+    }
+
+    .hero > p {
+      font-size: clamp(16px, 1.8vw, 19px);
       color: var(--dim);
-      max-width: 520px;
-      line-height: 1.8;
-      margin-bottom: 48px;
+      max-width: 540px;
+      line-height: 1.7;
+      margin-bottom: 44px;
       font-weight: 300;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
     }
 
     .hero-actions {
@@ -185,121 +275,173 @@
       gap: 16px;
       flex-wrap: wrap;
       justify-content: center;
+      animation: fadeInUp 0.6s ease-out 0.45s both;
     }
 
     .btn-primary {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 28px;
-      background: var(--accent);
-      color: var(--bg);
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+      color: white;
       font-family: inherit;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 600;
-      border: 1px solid var(--accent);
-      border-radius: 4px;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s;
       text-decoration: none;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
     }
     .btn-primary:hover {
-      background: transparent;
-      color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+      color: white;
     }
 
     .btn-secondary {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 28px;
-      background: transparent;
+      padding: 14px 32px;
+      background: rgba(255,255,255,0.04);
       color: var(--fg);
       font-family: inherit;
-      font-size: 13px;
-      font-weight: 400;
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s;
       text-decoration: none;
     }
     .btn-secondary:hover {
-      border-color: var(--dim);
-      color: var(--accent);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+      color: white;
     }
 
-    /* --- Chatbot Demo Section --- */
+    /* --- Stats bar --- */
+    .stats-bar {
+      display: flex;
+      gap: 48px;
+      margin-top: 80px;
+      animation: fadeInUp 0.6s ease-out 0.6s both;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -0.02em;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .stat-value .accent { color: var(--accent-light); }
+
+    /* --- Sections --- */
+    .section {
+      padding: 120px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-light);
+      margin-bottom: 16px;
+    }
+
+    .section h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--fg);
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+
+    .section > p {
+      color: var(--dim);
+      max-width: 520px;
+      font-weight: 300;
+      line-height: 1.8;
+      font-size: 16px;
+      margin-bottom: 56px;
+    }
+
+    /* --- Divider --- */
+    .divider {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    }
+
+    /* --- Demo section --- */
     .demo-section {
       padding: 120px 32px;
       max-width: 1100px;
       margin: 0 auto;
     }
 
-    .section-label {
-      font-size: 11px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--dim);
-      margin-bottom: 16px;
-    }
-
-    .demo-section h2 {
-      font-size: clamp(24px, 3vw, 36px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--accent);
-      margin-bottom: 20px;
-      line-height: 1.2;
-    }
-
-    .demo-section > p {
-      color: var(--dim);
-      max-width: 560px;
-      font-weight: 300;
-      line-height: 1.8;
-      margin-bottom: 48px;
-    }
-
     .chatbot-frame-wrapper {
       position: relative;
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 16px;
       overflow: hidden;
       background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.03),
+        0 20px 60px rgba(0,0,0,0.5),
+        0 0 100px rgba(99, 102, 241, 0.05);
     }
 
     .frame-header {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
     }
 
     .frame-dot {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      background: var(--border);
     }
     .frame-dot.red { background: #ff5f57; }
     .frame-dot.yellow { background: #febc2e; }
     .frame-dot.green { background: #28c840; }
 
     .frame-title {
-      font-size: 12px;
-      color: var(--dim);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
       margin-left: 12px;
     }
 
     .frame-open-btn {
       margin-left: auto;
-      font-size: 11px;
-      padding: 4px 12px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
       color: var(--dim);
       background: transparent;
       font-family: inherit;
@@ -308,76 +450,78 @@
       text-decoration: none;
     }
     .frame-open-btn:hover {
+      background: rgba(255,255,255,0.05);
       border-color: var(--accent);
-      color: var(--accent);
+      color: var(--accent-light);
     }
 
     .chatbot-iframe {
       width: 100%;
-      height: 600px;
+      height: 650px;
       border: none;
       display: block;
+      background: var(--bg);
     }
 
-    /* --- Features --- */
-    .section {
-      padding: 120px 32px;
-      max-width: 960px;
-      margin: 0 auto;
-    }
-
-    .section h2 {
-      font-size: clamp(24px, 3vw, 36px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--accent);
-      margin-bottom: 20px;
-      line-height: 1.2;
-    }
-
-    .section > p {
-      color: var(--dim);
-      max-width: 560px;
-      font-weight: 300;
-      line-height: 1.8;
-      margin-bottom: 56px;
-    }
-
+    /* --- Features grid --- */
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
     }
 
     .feature-card {
-      background: var(--surface);
-      padding: 32px;
-      transition: background 0.2s;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 36px 28px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,0.3), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
     }
     .feature-card:hover {
-      background: var(--hover);
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(99, 102, 241, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .feature-card:hover::before {
+      opacity: 1;
     }
 
     .feature-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
       font-size: 20px;
-      margin-bottom: 16px;
-      display: block;
     }
 
     .feature-card h3 {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
-      color: var(--accent);
-      margin-bottom: 8px;
-      letter-spacing: -0.01em;
+      color: var(--fg);
+      margin-bottom: 10px;
     }
 
     .feature-card p {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--dim);
       line-height: 1.7;
       font-weight: 300;
@@ -386,62 +530,69 @@
     /* --- File types --- */
     .file-types {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-top: 40px;
+      margin-top: 48px;
     }
 
     .file-tag {
-      padding: 8px 16px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      font-size: 12px;
-      color: var(--dim);
+      font-family: 'JetBrains Mono', monospace;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent-light);
+      background: var(--accent-glow);
+      border: 1px solid rgba(99, 102, 241, 0.12);
       transition: all 0.2s;
     }
     .file-tag:hover {
-      border-color: var(--dim);
-      color: var(--fg);
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-2px);
     }
 
     /* --- How it works --- */
     .steps {
-      counter-reset: step;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
     }
 
-    .step {
-      display: flex;
-      gap: 24px;
-      padding: 32px 0;
-      border-bottom: 1px solid var(--border);
+    .step-card {
+      padding: 36px 28px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      transition: all 0.3s;
+      position: relative;
     }
-    .step:last-child {
-      border-bottom: none;
+    .step-card:hover {
+      border-color: rgba(99,102,241,0.15);
+      transform: translateY(-4px);
     }
 
     .step-number {
-      flex-shrink: 0;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--dim);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 48px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      line-height: 1;
     }
 
-    .step-content h3 {
-      font-size: 15px;
+    .step-card h3 {
+      font-size: 18px;
       font-weight: 600;
-      color: var(--accent);
-      margin-bottom: 6px;
+      color: var(--fg);
+      margin-bottom: 10px;
     }
 
-    .step-content p {
-      font-size: 13px;
+    .step-card p {
+      font-size: 14px;
       color: var(--dim);
       font-weight: 300;
       line-height: 1.7;
@@ -450,46 +601,62 @@
     /* --- Stack --- */
     .stack-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 16px;
     }
 
     .stack-item {
-      padding: 24px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      transition: border-color 0.2s;
+      padding: 28px 24px;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.3s;
     }
     .stack-item:hover {
-      border-color: var(--dim);
+      border-color: rgba(255,255,255,0.12);
+      transform: translateY(-2px);
     }
 
     .stack-item .label {
+      font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--dim);
+      color: var(--muted);
       margin-bottom: 8px;
     }
 
     .stack-item .value {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
-      color: var(--accent);
+      color: var(--fg);
     }
 
     /* --- CTA --- */
     .cta-section {
       text-align: center;
       padding: 120px 32px;
-      border-top: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(99,102,241,0.08), transparent 70%);
+      pointer-events: none;
     }
 
     .cta-section h2 {
-      font-size: clamp(24px, 4vw, 40px);
+      font-size: clamp(28px, 5vw, 48px);
       font-weight: 700;
       letter-spacing: -0.03em;
-      color: var(--accent);
+      color: var(--fg);
       margin-bottom: 16px;
     }
 
@@ -497,28 +664,28 @@
       color: var(--dim);
       margin-bottom: 40px;
       font-weight: 300;
-      font-size: 15px;
+      font-size: 17px;
     }
 
     .cta-code {
       display: inline-block;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px 32px;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 18px 32px;
       font-size: 14px;
-      margin-bottom: 32px;
+      margin-bottom: 36px;
       user-select: all;
+      color: var(--dim);
     }
-
-    .cta-code .prompt { color: var(--dim); }
-    .cta-code .cmd { color: var(--accent); }
+    .cta-code .cmd { color: var(--accent-light); }
 
     /* --- Footer --- */
     footer {
-      border-top: 1px solid var(--border);
-      padding: 40px 32px;
-      max-width: 960px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 40px 40px;
+      max-width: 1100px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -528,9 +695,16 @@
     }
 
     .footer-left {
-      font-size: 12px;
-      color: var(--dim);
+      font-size: 13px;
+      color: var(--muted);
     }
+    .footer-left a {
+      color: var(--dim);
+      text-decoration: none;
+      border: none;
+      transition: color 0.2s;
+    }
+    .footer-left a:hover { color: var(--fg); }
 
     .footer-links {
       display: flex;
@@ -539,39 +713,41 @@
     }
 
     .footer-links a {
-      font-size: 12px;
-      color: var(--dim);
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
       border: none;
+      transition: color 0.2s;
     }
-    .footer-links a:hover {
-      color: var(--accent);
-    }
+    .footer-links a:hover { color: var(--fg); }
 
     /* --- Responsive --- */
+    @media (max-width: 900px) {
+      .features-grid, .steps { grid-template-columns: 1fr 1fr; }
+      .stack-grid { grid-template-columns: 1fr 1fr; }
+      .stats-bar { gap: 32px; }
+    }
     @media (max-width: 640px) {
-      nav {
-        padding: 12px 20px;
-      }
-      .nav-links {
-        display: none;
-      }
-      .hero {
-        padding: 100px 20px 60px;
-      }
-      .section, .demo-section {
-        padding: 80px 20px;
-      }
-      .chatbot-iframe {
-        height: 480px;
-      }
-      .step {
-        flex-direction: column;
-        gap: 12px;
-      }
-      footer {
-        flex-direction: column;
-        text-align: center;
-      }
+      nav { padding: 12px 20px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 20px 60px; }
+      .section, .demo-section { padding: 80px 20px; }
+      .chatbot-iframe { height: 480px; }
+      .features-grid, .steps { grid-template-columns: 1fr; }
+      .stack-grid { grid-template-columns: 1fr 1fr; }
+      .stats-bar { flex-direction: column; gap: 20px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+
+    /* --- Scroll reveal --- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
@@ -579,25 +755,34 @@
 
   <!-- Nav -->
   <nav>
-    <a href="#" class="nav-logo">10x analyst_</a>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">10</div>
+      10x Analyst
+    </a>
     <ul class="nav-links">
-      <li><a href="#demo">try it</a></li>
-      <li><a href="#features">features</a></li>
-      <li><a href="#how">how it works</a></li>
-      <li><a href="#stack">stack</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it Works</a></li>
+      <li><a href="#stack">Stack</a></li>
     </ul>
-    <a href="https://github.com/10xDotIn/10x-analyst" class="nav-cta" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/10xDotIn/10x-analyst" class="nav-cta" target="_blank" rel="noopener">View on GitHub</a>
   </nav>
 
   <!-- Hero -->
   <section class="hero">
+    <div class="hero-grid"></div>
+
     <div class="hero-badge">
-      <span class="dot"></span>
-      open source
+      <span class="pulse-dot"></span>
+      Open Source &middot; Free Forever
     </div>
 
-    <h1>analyze data<br/>with one prompt</h1>
-    <p>Upload CSV, PDF, or Excel files. Ask a question. Get instant AI-powered insights with real-time streaming responses.</p>
+    <h1>
+      Turn raw data into<br/>
+      <span class="gradient-text">actionable insights</span>
+    </h1>
+
+    <p>Upload CSV, PDF, or Excel files. Ask a question in plain English. Get AI-powered analysis with real-time streaming responses.</p>
 
     <div class="hero-actions">
       <a href="#demo" class="btn-primary">
@@ -605,26 +790,43 @@
         <span>&darr;</span>
       </a>
       <a href="https://github.com/10xDotIn/10x-analyst" class="btn-secondary" target="_blank" rel="noopener">
-        Clone repo
-        <span>&rarr;</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        Star on GitHub
       </a>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-value"><span class="accent">6</span></div>
+        <div class="stat-label">File types supported</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value"><span class="accent">&lt;2</span>s</div>
+        <div class="stat-label">Average parse time</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value"><span class="accent">100</span>%</div>
+        <div class="stat-label">Open source</div>
+      </div>
     </div>
   </section>
 
+  <div class="divider"></div>
+
   <!-- Live Chatbot Demo -->
-  <section class="demo-section" id="demo">
-    <div class="section-label">// live demo</div>
-    <h2>try it right here</h2>
-    <p>Upload a file, ask a question, and watch the AI analyze your data in real time. No signup required.</p>
+  <section class="demo-section reveal" id="demo">
+    <div class="section-label">Live Demo</div>
+    <h2 style="font-size: clamp(28px, 4vw, 44px); font-weight: 700; letter-spacing: -0.03em; color: var(--fg); margin-bottom: 16px;">Try it right here</h2>
+    <p style="color: var(--dim); max-width: 520px; font-weight: 300; line-height: 1.8; font-size: 16px; margin-bottom: 48px;">Upload a file, ask a question, and watch the AI analyze your data in real time. No signup. No API key. Just results.</p>
 
     <div class="chatbot-frame-wrapper">
       <div class="frame-header">
         <span class="frame-dot red"></span>
         <span class="frame-dot yellow"></span>
         <span class="frame-dot green"></span>
-        <span class="frame-title">10x analyst</span>
+        <span class="frame-title">10x-analyst</span>
         <a href="http://localhost:5173" target="_blank" rel="noopener" class="frame-open-btn">
-          open full app &nearr;
+          Open full app &nearr;
         </a>
       </div>
       <iframe
@@ -637,42 +839,44 @@
     </div>
   </section>
 
+  <div class="divider"></div>
+
   <!-- Features -->
-  <section class="section" id="features">
-    <div class="section-label">// features</div>
-    <h2>built for real analysis</h2>
-    <p>Not a toy demo. A full-stack app with file parsing, persistent chat history, and real-time AI streaming.</p>
+  <section class="section reveal" id="features">
+    <div class="section-label">Features</div>
+    <h2>Built for real analysis</h2>
+    <p>Not a toy demo. A full-stack application with file parsing, persistent chat history, and real-time AI streaming.</p>
 
     <div class="features-grid">
       <div class="feature-card">
-        <span class="feature-icon">&uarr;</span>
-        <h3>file upload</h3>
+        <div class="feature-icon">&uarr;</div>
+        <h3>Smart File Upload</h3>
         <p>Drop CSV, Excel, PDF, or text files. Server-side parsing extracts structured data for AI context.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">&rsaquo;_</span>
-        <h3>real-time streaming</h3>
-        <p>Responses stream word-by-word via SSE. No waiting for complete responses. Just like Claude web.</p>
+        <div class="feature-icon">&rsaquo;_</div>
+        <h3>Real-time Streaming</h3>
+        <p>Responses stream word-by-word via SSE. No waiting for complete responses. Instant feedback.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">#</span>
-        <h3>markdown rendering</h3>
-        <p>Code blocks with copy button. Tables. Links. Bold, italic, headings. Full markdown in responses.</p>
+        <div class="feature-icon">#</div>
+        <h3>Rich Markdown</h3>
+        <p>Code blocks with copy button. Tables, links, bold, italic, headings. Beautifully formatted output.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">[]</span>
-        <h3>chat persistence</h3>
-        <p>SQLite-backed history. Create, rename, delete conversations. Pick up where you left off.</p>
+        <div class="feature-icon">&#9633;</div>
+        <h3>Chat History</h3>
+        <p>SQLite-backed persistence. Create, rename, delete conversations. Pick up where you left off.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">&frac12;</span>
-        <h3>dark + light mode</h3>
-        <p>Full semantic token design system. Toggle between dark and light. Every element adapts.</p>
+        <div class="feature-icon">&#9681;</div>
+        <h3>Dark &amp; Light Mode</h3>
+        <p>Full semantic design system. Toggle between themes with every element adapting instantly.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon">&lt;/&gt;</span>
-        <h3>embeddable widget</h3>
-        <p>Build as a widget. Embed on any site with a single script tag. Floating button + popup chat.</p>
+        <div class="feature-icon">&lt;/&gt;</div>
+        <h3>Embeddable Widget</h3>
+        <p>Build as a widget. Embed on any site with a single script tag. Floating chat button included.</p>
       </div>
     </div>
 
@@ -686,89 +890,89 @@
     </div>
   </section>
 
+  <div class="divider"></div>
+
   <!-- How it works -->
-  <section class="section" id="how">
-    <div class="section-label">// how it works</div>
-    <h2>three steps</h2>
-    <p>Clone, run, analyze. No config files. No environment setup. One command.</p>
+  <section class="section reveal" id="how">
+    <div class="section-label">How it Works</div>
+    <h2>Three simple steps</h2>
+    <p>Clone, run, analyze. No config files. No environment variables. One command to start.</p>
 
     <div class="steps">
-      <div class="step">
-        <div class="step-number">1</div>
-        <div class="step-content">
-          <h3>clone + run setup</h3>
-          <p>Clone the repo. Run <code>bash setup.sh</code> (Mac/Linux) or double-click <code>setup.bat</code> (Windows). It installs dependencies, checks TypeScript, starts both servers.</p>
-        </div>
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h3>Clone &amp; Setup</h3>
+        <p>Clone the repo and run the setup script. It installs dependencies, checks TypeScript, and starts both servers automatically.</p>
       </div>
-      <div class="step">
-        <div class="step-number">2</div>
-        <div class="step-content">
-          <h3>upload your data</h3>
-          <p>Drag a CSV, Excel spreadsheet, or PDF into the chat. The backend parses it, extracts structured data, and makes it available as context for every question you ask.</p>
-        </div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h3>Upload Data</h3>
+        <p>Drag a CSV, Excel spreadsheet, or PDF into the chat. The backend parses it and extracts structured data as context.</p>
       </div>
-      <div class="step">
-        <div class="step-number">3</div>
-        <div class="step-content">
-          <h3>ask questions</h3>
-          <p>Ask anything about your data. The AI streams its response in real-time, complete with formatted tables, charts recommendations, and actionable insights.</p>
-        </div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h3>Ask Questions</h3>
+        <p>Ask anything about your data. Get streaming responses with formatted tables, insights, and recommendations.</p>
       </div>
     </div>
   </section>
 
+  <div class="divider"></div>
+
   <!-- Stack -->
-  <section class="section" id="stack">
-    <div class="section-label">// tech stack</div>
-    <h2>what powers it</h2>
-    <p>Modern, minimal dependencies. No bloat.</p>
+  <section class="section reveal" id="stack">
+    <div class="section-label">Tech Stack</div>
+    <h2>What powers it</h2>
+    <p>Modern, minimal dependencies. Zero bloat. Production-grade architecture.</p>
 
     <div class="stack-grid">
       <div class="stack-item">
-        <div class="label">frontend</div>
+        <div class="label">Frontend</div>
         <div class="value">React 19 + Vite</div>
       </div>
       <div class="stack-item">
-        <div class="label">styling</div>
+        <div class="label">Styling</div>
         <div class="value">Tailwind CSS v4</div>
       </div>
       <div class="stack-item">
-        <div class="label">language</div>
+        <div class="label">Language</div>
         <div class="value">TypeScript</div>
       </div>
       <div class="stack-item">
-        <div class="label">backend</div>
+        <div class="label">Backend</div>
         <div class="value">Express 5</div>
       </div>
       <div class="stack-item">
-        <div class="label">database</div>
+        <div class="label">Database</div>
         <div class="value">SQLite</div>
       </div>
       <div class="stack-item">
-        <div class="label">ai</div>
+        <div class="label">AI</div>
         <div class="value">OpenAnalyst API</div>
       </div>
       <div class="stack-item">
-        <div class="label">icons</div>
+        <div class="label">Icons</div>
         <div class="value">Lucide React</div>
       </div>
       <div class="stack-item">
-        <div class="label">file parsing</div>
+        <div class="label">File Parsing</div>
         <div class="value">csv-parse + xlsx</div>
       </div>
     </div>
   </section>
 
+  <div class="divider"></div>
+
   <!-- CTA -->
-  <section class="cta-section">
-    <h2>try it now</h2>
-    <p>One command to install and run.</p>
+  <section class="cta-section reveal">
+    <h2>Ready to analyze?</h2>
+    <p>One command. No signup. Start in under 60 seconds.</p>
     <div class="cta-code">
-      <span class="prompt">$</span> <span class="cmd">git clone https://github.com/10xDotIn/10x-analyst.git && cd 10x-analyst && bash setup.sh</span>
+      <span>$</span> <span class="cmd">git clone https://github.com/10xDotIn/10x-analyst.git && cd 10x-analyst && bash setup.sh</span>
     </div>
     <br/><br/>
     <a href="https://github.com/10xDotIn/10x-analyst" class="btn-primary" target="_blank" rel="noopener">
-      View on GitHub
+      Get Started
       <span>&rarr;</span>
     </a>
   </section>
@@ -776,18 +980,53 @@
   <!-- Footer -->
   <footer>
     <div class="footer-left">
-      10x analyst_ &mdash; built by <a href="https://github.com/10xDotIn" target="_blank" rel="noopener">10xDotIn</a>
+      10x Analyst &mdash; built by <a href="https://github.com/10xDotIn" target="_blank" rel="noopener">10xDotIn</a>
     </div>
     <ul class="footer-links">
-      <li><a href="https://github.com/10xDotIn/10x-analyst" target="_blank" rel="noopener">github</a></li>
-      <li><a href="https://github.com/10xDotIn/10x-analyst/issues" target="_blank" rel="noopener">issues</a></li>
+      <li><a href="https://github.com/10xDotIn/10x-analyst" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://github.com/10xDotIn/10x-analyst/issues" target="_blank" rel="noopener">Issues</a></li>
       <li><a href="https://github.com/10xDotIn" target="_blank" rel="noopener">10xDotIn</a></li>
     </ul>
   </footer>
 
   <!-- Floating Widget (bottom-right chat bubble) -->
   <link rel="stylesheet" href="dist-widget/week-2-project.css">
+  <style id="landing-overrides">
+    /* Override widget CSS global resets — scoped to NOT touch widget internals */
+    html {
+      background: var(--bg) !important;
+      background-color: var(--bg) !important;
+    }
+    body {
+      background: var(--bg) !important;
+      background-color: var(--bg) !important;
+      color: var(--fg) !important;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+      margin: 0 !important;
+    }
+    /* Reset Tailwind's global border-color but NOT inside the widget */
+    *:not(#pm-chatbot-widget-root):not(#pm-chatbot-widget-root *) {
+      border-color: rgba(255,255,255,0.06);
+    }
+    /* Widget gets full control of its own styles */
+    #pm-chatbot-widget-root {
+      z-index: 99999 !important;
+    }
+  </style>
   <script src="dist-widget/pm-chatbot-widget.js"></script>
+
+  <!-- Scroll reveal script -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
 
 </body>
 </html>

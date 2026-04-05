@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { Message } from '../types/chat'
 import MessageBubble from './MessageBubble'
 import TypingIndicator from './TypingIndicator'
-import { Bot } from 'lucide-react'
+import { BarChart3, FileUp, MessageSquare, Sparkles } from 'lucide-react'
 
 interface ChatWindowProps {
   messages: Message[]
@@ -10,8 +10,36 @@ interface ChatWindowProps {
   className?: string
 }
 
+function StarterPrompts() {
+  return (
+    <div className="px-5 pb-5 pt-1 animate-fade-in">
+      <p className="text-[11px] font-semibold text-muted-foreground tracking-widest uppercase mb-3 px-1">
+        Try these
+      </p>
+      <div className="space-y-2">
+        {[
+          { icon: FileUp, text: 'Upload CSV, Excel, or PDF files' },
+          { icon: MessageSquare, text: 'Ask questions about your data' },
+          { icon: Sparkles, text: 'Get trends & recommendations' },
+        ].map(({ icon: Icon, text }) => (
+          <div
+            key={text}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-card border border-border text-left transition-colors duration-150 hover:bg-accent/50"
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 shrink-0">
+              <Icon className="h-4 w-4 text-primary" />
+            </div>
+            <span className="text-sm text-foreground">{text}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function ChatWindow({ messages, isLoading, className = '' }: ChatWindowProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const isWelcomeOnly = messages.length === 1 && messages[0].id === 'welcome'
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -23,18 +51,17 @@ export default function ChatWindow({ messages, isLoading, className = '' }: Chat
     return (
       <div
         ref={scrollRef}
-        className={`flex-1 flex items-center justify-center p-6 overflow-y-auto chat-scrollbar bg-background ${className}`}
+        className={`flex-1 flex flex-col items-center justify-center p-6 overflow-y-auto chat-scrollbar bg-background ${className}`}
       >
         <div className="text-center max-w-sm animate-fade-in-up">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto rounded-2xl bg-primary/10 mb-4">
-            <Bot className="h-8 w-8 text-primary" />
+          <div className="flex items-center justify-center w-14 h-14 mx-auto rounded-2xl bg-primary text-primary-foreground mb-4">
+            <BarChart3 className="h-7 w-7" />
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-2">
-            Welcome to PM Assistant
+            10x Analyst
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Your AI product management expert. Ask me anything about product strategy, roadmaps,
-            prioritization, user research, agile methods, and more.
+            Upload data files and ask questions to get AI-powered insights.
           </p>
         </div>
       </div>
@@ -44,15 +71,19 @@ export default function ChatWindow({ messages, isLoading, className = '' }: Chat
   return (
     <div
       ref={scrollRef}
-      className={`flex-1 overflow-y-auto p-4 space-y-3 chat-scrollbar bg-background ${className}`}
+      className={`flex-1 overflow-y-auto chat-scrollbar bg-background flex flex-col ${className}`}
       role="log"
       aria-label="Chat messages"
       aria-live="polite"
     >
-      {messages.map((message) => (
-        <MessageBubble key={message.id} message={message} />
-      ))}
-      {isLoading && <TypingIndicator />}
+      <div className="px-5 pt-5 pb-3 space-y-4 flex-1">
+        {messages.map((message) => (
+          <MessageBubble key={message.id} message={message} />
+        ))}
+        {isLoading && <TypingIndicator />}
+      </div>
+
+      {isWelcomeOnly && !isLoading && <StarterPrompts />}
     </div>
   )
 }

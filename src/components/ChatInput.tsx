@@ -40,7 +40,7 @@ export default function ChatInput({ onSend, disabled = false, className = '' }: 
     setUploadError(null)
     const textarea = e.target
     textarea.style.height = 'auto'
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`
   }
 
   const handleFileUploaded = (file: UploadedFile) => {
@@ -55,67 +55,57 @@ export default function ChatInput({ onSend, disabled = false, className = '' }: 
   const canSend = (value.trim().length > 0 || attachedFiles.length > 0) && !disabled
 
   return (
-    <div className={`w-full max-w-3xl mx-auto px-4 pb-4 ${className}`}>
-      <div className="rounded-2xl border border-border bg-card overflow-hidden transition-colors duration-150 focus-within:border-ring">
-        {/* Attached files */}
-        {attachedFiles.length > 0 && (
-          <div className="flex flex-wrap gap-2 px-4 pt-3">
-            {attachedFiles.map((file) => (
-              <FileChip
-                key={file.fileId}
-                file={file}
-                onRemove={() => handleRemoveFile(file.fileId)}
-              />
-            ))}
-          </div>
-        )}
+    <div className={`shrink-0 bg-card px-5 py-4 ${className}`} style={{ borderTop: '1px solid hsl(var(--border))' }}>
+      {/* Attached files */}
+      {attachedFiles.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {attachedFiles.map((file) => (
+            <FileChip
+              key={file.fileId}
+              file={file}
+              onRemove={() => handleRemoveFile(file.fileId)}
+            />
+          ))}
+        </div>
+      )}
 
-        {/* Upload error */}
-        {uploadError && (
-          <div className="px-4 pt-2">
-            <p className="text-xs text-destructive">{uploadError}</p>
-          </div>
-        )}
+      {/* Upload error */}
+      {uploadError && (
+        <div className="mb-2">
+          <p className="text-xs text-destructive">{uploadError}</p>
+        </div>
+      )}
 
-        {/* Textarea */}
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={handleInput}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask a question or upload a file to analyze..."
-          disabled={disabled}
-          rows={1}
-          className="w-full resize-none bg-transparent px-4 pt-4 pb-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
-          aria-label="Type your message"
+      {/* Input row */}
+      <div className="flex items-end gap-3">
+        <FileUploadButton
+          onFileUploaded={handleFileUploaded}
+          onError={(msg) => setUploadError(msg)}
         />
 
-        {/* Bottom toolbar */}
-        <div className="flex items-center justify-between px-3 pb-3">
-          <FileUploadButton
-            onFileUploaded={handleFileUploaded}
-            onError={(msg) => setUploadError(msg)}
+        <div className="flex-1 rounded-xl bg-background overflow-hidden" style={{ border: '1px solid hsl(var(--border))' }}>
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={handleInput}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about your data..."
+            disabled={disabled}
+            rows={1}
+            className="w-full resize-none bg-transparent px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
+            aria-label="Type your message"
           />
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground select-none hidden sm:inline">
-              10x Analyst
-            </span>
-            <button
-              onClick={handleSend}
-              disabled={!canSend}
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:scale-[0.95] focus-ring disabled:opacity-30 disabled:pointer-events-none"
-              aria-label="Send message"
-            >
-              <ArrowUp className="h-4 w-4" />
-            </button>
-          </div>
         </div>
-      </div>
 
-      <p className="mt-2 text-xs text-muted-foreground text-center">
-        Press Enter to send, Shift + Enter for new line
-      </p>
+        <button
+          onClick={handleSend}
+          disabled={!canSend}
+          className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:scale-[0.95] focus-ring disabled:opacity-30 disabled:pointer-events-none shrink-0"
+          aria-label="Send message"
+        >
+          <ArrowUp className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   )
 }
