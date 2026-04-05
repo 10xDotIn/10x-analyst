@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { parse as csvParse } from 'csv-parse/sync'
-import * as XLSX from 'xlsx'
+import XLSX from 'xlsx'
 import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 const { PDFParse } = require('pdf-parse')
@@ -97,7 +97,8 @@ function parseCsv(filePath: string, fileName: string): ParsedFile {
  * Parse an Excel file (.xlsx, .xls).
  */
 function parseExcel(filePath: string, fileName: string): ParsedFile {
-  const workbook = XLSX.readFile(filePath)
+  const buffer = fs.readFileSync(filePath)
+  const workbook = XLSX.read(buffer)
   const sheetName = workbook.SheetNames[0]
   const sheet = workbook.Sheets[sheetName]
   const allRows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(sheet)
